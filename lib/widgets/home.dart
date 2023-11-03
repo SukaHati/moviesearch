@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   "Type": "movie",
   "Poster": "https://m.media-amazon.com/images/M/MV5BMTYzZWE3MDAtZjZkMi00MzhlLTlhZDUtNmI2Zjg3OWVlZWI0XkEyXkFqcGdeQXVyNDk3NzU2MTQ@._V1_SX300.jpg"
   }*/];
+  final searchEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +61,12 @@ class _HomePageState extends State<HomePage> {
         children: [
           Row(
             children: [
-              Expanded(flex: 2, child: TextField(decoration: InputDecoration(hintText: "Enter movie name"),)),
+              Expanded(flex: 2, child: TextField(decoration: InputDecoration(hintText: "Enter movie name"), controller: searchEditingController,)),
               Expanded(
                 flex: 1,
                 child: ElevatedButton(onPressed: (){
-                  fetchMovies().then((value) => setState((){
+                  print("TextField: ${searchEditingController.text}");
+                  fetchMovies(searchEditingController.text).then((value) => setState((){
                     _movies = value;
                   }));
                 }, child: Text("Search")),
@@ -94,14 +96,18 @@ class _HomePageState extends State<HomePage> {
   //Bila panggil function ini, kita akan gunakan async await atau then
   //Jika saya memanipulasi [], yang <> akan jadi <List<classname>>
   //Jika saya memanipulasi {}, yang [] akan jadi <classname>
-  Future<List<MovieSearch>> fetchMovies({String searchname = ""}) async {
+  Future<List<MovieSearch>> fetchMovies(String searchname) async {
+    print("This is: $searchname");
+    String thelink = "https://www.omdbapi.com/?apikey=87d10179&s=pumping";
 
-    if(searchname == "") {
-
+    if(searchname != "") {
+      thelink = 'https://www.omdbapi.com/?apikey=87d10179&s=$searchname';
     }
 
+    print(thelink);
+
     final response = await http
-        .get(Uri.parse('https://www.omdbapi.com/?s=page&apikey=87d10179'));
+        .get(Uri.parse(thelink));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
